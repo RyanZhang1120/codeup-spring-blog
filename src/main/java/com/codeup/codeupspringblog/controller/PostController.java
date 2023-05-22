@@ -1,5 +1,5 @@
-package com.codeup.codeupspringblog;
-import com.codeup.codeupspringblog.model.Post;
+package com.codeup.codeupspringblog.controller;
+import com.codeup.codeupspringblog.models.Post;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +29,6 @@ public class PostController {
     @ResponseBody
     public String createPost(@RequestBody Post post) {
         // Logic for creating a new post
-        return String.format("A new post with title '%s' and content '%s' has been created.", post.getTitle(), post.getContent());
+        return String.format("A new post with title '%s' and content '%s' has been created.", post.getTitle(), post.getBody());
     }
 }
