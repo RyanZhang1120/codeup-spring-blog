@@ -7,19 +7,16 @@ import com.codeup.codeupspringblog.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class PostController {
     private PostRepository postDao;
-    private UserRepository userRepository;
+    private UserRepository userDao;
     @Autowired
-    public void PostRepository(PostRepository postDao, UserRepository userRepository) {
+    public void PostRepository(PostRepository postDao, UserRepository userDao) {
         this.postDao = postDao;
-        this.userRepository = userRepository;
+        this.userDao = userDao;
     }
 
     @GetMapping("/posts")
@@ -48,7 +45,7 @@ public class PostController {
     public String createPost(@ModelAttribute Post post) {
         // fetch a user from database
         // Here, I'm getting the first user. Change this according to your requirement.
-        User user = userRepository.findById(1L).orElse(null);
+        User user = userDao.findAll().get(0);
 
         // check if user is not null and then set it to post
         if (user != null) {
@@ -57,5 +54,21 @@ public class PostController {
         postDao.save(post);
         return "redirect:/posts";
     }
+    @GetMapping("/posts/{id}/edit")
+    public String showEditForm(@PathVariable Long id, Model model) {
+        Post post = postDao.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid post Id:" + id));
+        model.addAttribute("post", post);
+        return "posts/edit";
+    }
+    @PostMapping("/posts/{id}")
+    public String updatePost(@PathVariable Long id, @ModelAttribute Post post) {
+        // Retrieve the first user
+        User user = userDao.findById(1L)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user Id: 1"));
 
+        // Assign the user to the post
+        post.setUser(user);
+        postDao.save(post);
+        return "redirect:/posts/" + id;
+    }
 }
