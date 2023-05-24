@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Products Index</title>
+</head>
+<body>
+
+
+<h3>Current Products</h3>
+
+
+<div th:each="product : ${productsList}" style="border: 1px solid black; width: 25%; padding: .5em">
+
+    Here's a product:
+    <div th:text="${product.getName()}"></div>
+    <div th:text="${product.getPrice()}"></div>
+
+    <div th:if="${product.getProductCategories().size > 0}">
+
+        <h6>Product categories:</h6>
+        <ul th:each="category : ${product.getProductCategories()}">
+            <li th:text="${category.getName()}">
+        </ul>
+
+    </div>
+
+</div>
+
+
+</body>
+</html>
