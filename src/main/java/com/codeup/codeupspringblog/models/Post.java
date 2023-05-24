@@ -3,6 +3,7 @@ package com.codeup.codeupspringblog.models;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "posts")
 public class Post {
 
     @Id
@@ -15,6 +16,11 @@ public class Post {
 
     @Column(nullable = false)
     private String body;
+
+    @ManyToOne
+    @JoinColumn(name="user_id", nullable = false)
+    private User user;
+
 
     public Post() {}
 
@@ -37,6 +43,14 @@ public class Post {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
 

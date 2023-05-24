@@ -11,6 +11,7 @@
     <h4 th:text="${postId}"></h4>
     <h2 th:text="${post.title}"></h2>
     <h3 th:text="${post.body}"></h3>
+    <p>Posted by: <span th:text="${post.user.email}"></span></p>
 </div>
 
 
