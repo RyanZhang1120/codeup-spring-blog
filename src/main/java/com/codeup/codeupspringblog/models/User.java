@@ -1,7 +1,10 @@
 package com.codeup.codeupspringblog.models;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -22,9 +25,30 @@ public class User {
     private String email;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-    private List<Post> posts;
+    private List<Post> posts = new ArrayList<>();
 
     public User() {
+    }
+
+    public User(User copy) {
+        id = copy.id; // This line is SUPER important! Many things won't work if it's absent
+        email = copy.email;
+        username = copy.username;
+        password = copy.password;
+    }
+    public User(Long id, String username, String password, String email, List<Post> posts) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.posts = posts;
+    }
+
+    public User(String username, String password, String email, List<Post> posts) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.posts = posts;
     }
 
     public Long getId() {
@@ -66,4 +90,5 @@ public class User {
     public void setPosts(List<Post> posts) {
         this.posts = posts;
     }
+
 }

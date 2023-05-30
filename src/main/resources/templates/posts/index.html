@@ -1,9 +1,26 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="partials/head :: head ('Post - Index')">
 <body>
 
-<nav th:insert="partials/navbar :: navbar" />
+<nav>
+    <div sec:authorize="isAuthenticated()">
+        This content is only shown to authenticated users.
+
+        User ID: <span th:text="${#authentication.principal.id}"/>
+        Username: <span th:text="${#authentication.principal.username}"/>
+        Email: <span th:text="${#authentication.principal.email}"/>
+    </div>
+    <ul>
+        <!-- More links here... -->
+        <li>
+            <form th:action="@{/logout}" th:method="post">
+                <button class="btn-link btn" style="margin-top: 8px">Logout</button>
+            </form>
+        </li>
+    </ul>
+</nav>
 
 <h1 class="text-center my-5 ">Show all post</h1>
 

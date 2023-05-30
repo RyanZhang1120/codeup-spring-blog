@@ -6,9 +6,14 @@ import com.codeup.codeupspringblog.repositories.PostRepository;
 import com.codeup.codeupspringblog.repositories.UserRepository;
 import com.codeup.codeupspringblog.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 
 @Controller
 public class PostController {
@@ -29,6 +34,13 @@ public class PostController {
     }
     @GetMapping("/posts/create")
     public String showCreateForm(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        // Check if a user is logged in
+        if (auth instanceof AnonymousAuthenticationToken) {
+            return "redirect:/login";
+        }
+
         model.addAttribute("post", new Post());
         return "posts/create";
     }
@@ -46,15 +58,21 @@ public class PostController {
     }
     @PostMapping("/posts")
     public String createPost(@ModelAttribute Post post) {
-        // fetch a user from database
-        // Here, I'm getting the first user. Change this according to your requirement.
-        User user = userDao.findAll().get(0);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        // Get the authenticated user name
+        String username = auth.getName();
 
-        // check if user is not null and then set it to post
-        if (user != null) {
-            post.setUser(user);
+        // Retrieve the User from the UserRepository using the authenticated username
+        User user = userDao.findByUsername(username);
+        if (user == null) {
+            throw new IllegalArgumentException("Invalid user name: " + username);
         }
+        // Assign the user to the post
+        post.setUser(user);
+
+        // Save the post with the associated user
         postDao.save(post);
+
         return "redirect:/posts";
     }
     @GetMapping("/posts/{id}/edit")
