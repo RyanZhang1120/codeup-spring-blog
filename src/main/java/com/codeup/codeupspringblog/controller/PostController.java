@@ -5,14 +5,18 @@ import com.codeup.codeupspringblog.models.User;
 import com.codeup.codeupspringblog.repositories.PostRepository;
 import com.codeup.codeupspringblog.repositories.UserRepository;
 import com.codeup.codeupspringblog.service.EmailService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+
 
 
 @Controller
@@ -57,7 +61,7 @@ public class PostController {
         return "posts/show";
     }
     @PostMapping("/posts")
-    public String createPost(@ModelAttribute Post post) {
+    public String createPost(@Valid @ModelAttribute Post post, Errors validation, Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         // Get the authenticated user name
         String username = auth.getName();
@@ -66,6 +70,11 @@ public class PostController {
         User user = userDao.findByUsername(username);
         if (user == null) {
             throw new IllegalArgumentException("Invalid user name: " + username);
+        }
+        if (validation.hasErrors()) {
+            model.addAttribute("errors", validation);
+            model.addAttribute("post", post);
+            return "posts/create"; // return to the form page if there is an error
         }
         // Assign the user to the post
         post.setUser(user);
